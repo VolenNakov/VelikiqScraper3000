@@ -1,0 +1,56 @@
+name: Go Build and Deploy
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+        
+    - name: Cache Go modules
+      uses: actions/cache@v3
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Install dependencies
+      run: go mod download
+      
+    - name: Build
+      run: go build -v -o myapp
+      
+    - name: Run tests
+      run: go test -v ./...
+      
+    - name: Stop existing service
+      run: sudo systemctl stop myapp.service || true
+      continue-on-error: true
+
+    - name: Deploy application
+      env:
+        APP_PORT: ${{ secrets.APP_PORT }}
+        DB_FILE: ${{ secrets.DATABASE_URL }}
+      run: bash scripts/deploy.sh
+      
+    - name: Verify deployment
+      run: |
+        sleep 5
+        sudo systemctl status myapp.service
+        
+    - name: Service logs
+      if: always()
+      run: |
+        sudo journalctl -u myapp.service -n 50 --no-pager
