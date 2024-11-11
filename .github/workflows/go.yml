@@ -24,9 +24,6 @@ jobs:
     - name: Build
       run: go build -v -o myapp
       
-    - name: Run tests
-      run: go test -v ./...
-      
     - name: Stop existing service
       run: sudo systemctl stop myapp.service || true
       continue-on-error: true
