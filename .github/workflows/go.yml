@@ -11,6 +11,7 @@ jobs:
     runs-on: self-hosted
     env:
       DB_FILE: ${{ secrets.DATABASE_URL }}
+      APP_PORT: ${{ secrets.APP_PORT }}
 
     steps:
       - uses: actions/checkout@v4
@@ -35,7 +36,7 @@ jobs:
 
       - name: Deploy application
         env:
-          APP_PORT: ${{ secrets.APP_PORT }}
+          APP_PORT: ${{env.APP_PORT}}
         run: sudo -u volen bash scripts/deploy.sh
 
       - name: Verify deployment
