@@ -27,10 +27,10 @@ jobs:
           CC: aarch64-linux-gnu-gcc
           GOOS: linux
           GOARCH: arm64
-        run: /usr/local/go/bin/go build -v -o myapp ./cmd/api/main.go
+        run: /usr/local/go/bin/go build -v -o server ./cmd/api/main.go
 
       - name: Stop existing service
-        run: sudo systemctl stop myapp.service || true
+        run: sudo systemctl stop scraper.service || true
         continue-on-error: true
 
       - name: Deploy application
@@ -41,4 +41,4 @@ jobs:
       - name: Verify deployment
         run: |
           sleep 30
-          sudo systemctl status myapp.service
+          sudo systemctl status scraper.service

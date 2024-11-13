@@ -2,20 +2,20 @@
 set -e
 
 # Variables
-APP_DIR="/opt/myapp"
-SERVICE_FILE="/etc/systemd/system/myapp.service"
-ENV_FILE="/opt/myapp/.env"
+APP_DIR="$HOME/scraper"
+SERVICE_FILE="/etc/systemd/system/scraper.service"
+ENV_FILE="$APP_DIR/.env"
 
 # Create application directory if it doesn't exist
-sudo mkdir -p "$APP_DIR"
+mkdir -p "$APP_DIR"
 
 # Copy the binary to the application directory
-sudo cp myapp "$APP_DIR/"
-sudo chmod +x "$APP_DIR/myapp"
+cp server "$APP_DIR/"
+chmod +x "$APP_DIR/server"
 
 # Write environment variables to a secure file
 echo "Writing environment variables to $ENV_FILE"
-sudo tee "$ENV_FILE" > /dev/null <<EOL
+tee "$ENV_FILE" > /dev/null <<EOL
 PORT=${APP_PORT}
 DB_FILE=${DB_FILE}
 EOL
@@ -27,14 +27,14 @@ sudo chmod 600 "$ENV_FILE"
 echo "Setting up systemd service at $SERVICE_FILE"
 sudo tee "$SERVICE_FILE" > /dev/null <<EOL
 [Unit]
-Description=My Go Application
+Description=Scraper3000
 After=network.target
 
 [Service]
 Type=simple
-User=scraper
+User=volen
 WorkingDirectory=$APP_DIR
-ExecStart=$APP_DIR/myapp
+ExecStart=$APP_DIR/server
 Restart=always
 RestartSec=5
 EnvironmentFile=$ENV_FILE
