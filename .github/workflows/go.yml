@@ -36,7 +36,7 @@ jobs:
       - name: Deploy application
         env:
           APP_PORT: ${{ secrets.APP_PORT }}
-        run: bash scripts/deploy.sh
+        run: sudo -u volen bash scripts/deploy.sh
 
       - name: Verify deployment
         run: |
