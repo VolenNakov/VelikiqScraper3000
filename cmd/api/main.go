@@ -17,7 +17,7 @@ import (
 )
 
 type Config struct {
-	SqliteFile string `env:"SQLITE_FILE,required"`
+	DbFile string `env:"DB_FILE,required"`
 }
 
 func main() {
@@ -30,7 +30,7 @@ func main() {
 		log.Fatalf("unable to parse ennvironment variables: %e", err)
 	}
 
-	db, err := setupDatabase(cfg.SqliteFile)
+	db, err := setupDatabase(cfg.DbFile)
 	if err != nil {
 		log.Fatal(err)
 	}
