@@ -15,6 +15,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Logg
+        working-directory: ./internal/db/
+        run: ls
+
       - name: Run migrations
         working-directory: ./internal/db/
         run: goose sqlite3 ./${{ env.DB_FILE }} up
