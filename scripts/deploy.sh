@@ -4,7 +4,7 @@ set -e
 # Variables
 APP_DIR="/opt/myapp"
 SERVICE_FILE="/etc/systemd/system/myapp.service"
-ENV_FILE="/etc/myapp.env"
+ENV_FILE="/opt/myapp/.env"
 
 # Create application directory if it doesn't exist
 sudo mkdir -p "$APP_DIR"
