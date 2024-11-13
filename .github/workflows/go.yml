@@ -35,8 +35,6 @@ jobs:
         continue-on-error: true
 
       - name: Deploy application
-        env:
-          APP_PORT: ${{env.APP_PORT}}
         run: sudo -u volen bash scripts/deploy.sh
 
       - name: Verify deployment
