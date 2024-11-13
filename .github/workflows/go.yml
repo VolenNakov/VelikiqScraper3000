@@ -7,22 +7,27 @@ on:
     branches: [ "main" ]
 
 jobs:
+  env:
+    DB_FILE: ${{ secrets.DATABASE_URL }}
   build-and-deploy:
     runs-on: self-hosted
     
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.21'
+
+    - name: Run migrations
+      working-directory: ./internal/db/
+      run: goose sqlite3 ./${{ DB_FILE }} up
 
     - name: Install dependencies
       run: go mod download
       
     - name: Build
-      run: go build -v -o myapp
+      env:
+        CC: aarch64-linux-gnu-gcc
+        GOOS: linux
+        GOARCH: arm64
+      run: go build -v -o myapp ./cmd/api/main.go
       
     - name: Stop existing service
       run: sudo systemctl stop myapp.service || true
@@ -31,15 +36,9 @@ jobs:
     - name: Deploy application
       env:
         APP_PORT: ${{ secrets.APP_PORT }}
-        DB_FILE: ${{ secrets.DATABASE_URL }}
       run: bash scripts/deploy.sh
       
     - name: Verify deployment
       run: |
-        sleep 5
+        sleep 30
         sudo systemctl status myapp.service
-        
-    - name: Service logs
-      if: always()
-      run: |
-        sudo journalctl -u myapp.service -n 50 --no-pager

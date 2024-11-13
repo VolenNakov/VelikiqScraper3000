@@ -1,15 +1,12 @@
 package main
 
 import (
-	project "OlxScraper"
 	"OlxScraper/internal/api/router"
 	sqlcDb "OlxScraper/internal/db"
 	"OlxScraper/internal/repository"
 	"OlxScraper/internal/service"
 	"database/sql"
 	"github.com/caarlos0/env/v6"
-	"github.com/pressly/goose/v3"
-
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3"
@@ -55,23 +52,5 @@ func setupDatabase(sqliteFile string) (*sql.DB, error) {
 		return nil, err
 	}
 
-	if err := runMigrations(db); err != nil {
-		return nil, err
-	}
-
 	return db, nil
-}
-
-func runMigrations(db *sql.DB) error {
-	goose.SetBaseFS(project.EmbedMigrations)
-
-	if err := goose.SetDialect("sqlite"); err != nil {
-		panic(err)
-	}
-	if err := goose.Up(db, "migrations"); err != nil {
-		panic(err)
-	}
-
-	log.Println("Migrations applied successfully.")
-	return nil
 }
