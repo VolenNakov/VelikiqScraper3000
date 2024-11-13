@@ -17,7 +17,7 @@ sudo chmod +x "$APP_DIR/myapp"
 echo "Writing environment variables to $ENV_FILE"
 sudo tee "$ENV_FILE" > /dev/null <<EOL
 PORT=${APP_PORT}
-DATABASE_URL=${DATABASE_URL}
+DB_FILE=${DB_FILE}
 EOL
 
 # Secure the environment file
