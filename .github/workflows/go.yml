@@ -41,7 +41,6 @@ jobs:
           cp server ${{ env.APP_FOLDER }}
 
       - name: Restart Service
-        env:
         run: sudo systemctl restart scraper
 
       - name: Verify deployment
