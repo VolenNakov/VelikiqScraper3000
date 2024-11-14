@@ -12,13 +12,18 @@ jobs:
     env:
       DB_FILE: ${{ secrets.DATABASE_URL }}
       APP_PORT: ${{ secrets.APP_PORT }}
+      APP_FOLDER: ${{ secrets.APP_FOLDER }}
 
     steps:
+      - name: Stop existing service
+        run: sudo systemctl stop scraper.service || true
+        continue-on-error: true
+
       - uses: actions/checkout@v4
 
       - name: Run migrations
         working-directory: ./internal/db/migrations
-        run: goose sqlite3 ./${{ env.DB_FILE }} up
+        run: goose sqlite3 ${{ env.APP_FOLDER }}/${{ env.DB_FILE }} up
 
       - name: Install dependencies
         run: /usr/local/go/bin/go mod download
@@ -30,12 +35,14 @@ jobs:
           GOARCH: arm64
         run: /usr/local/go/bin/go build -v -o server ./cmd/api/main.go
 
-      - name: Stop existing service
-        run: sudo systemctl stop scraper.service || true
-        continue-on-error: true
+      - name: Copy executable to app_folder
+        run: |
+          chmod +x server
+          cp server ${{ env.APP_FOLDER }}
 
-      - name: Deploy application
-        run: bash scripts/deploy.sh
+      - name: Restart Service
+        env:
+        run: sudo systemctl restart scraper
 
       - name: Verify deployment
         run: |

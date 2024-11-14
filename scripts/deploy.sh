@@ -9,7 +9,7 @@ ENV_FILE="$APP_DIR/.env"
 # Create application directory if it doesn't exist
 mkdir -p "$APP_DIR"
 
-# Copy the binary to the application directory
+# Copy the binary to the  application directory
 cp server "$APP_DIR/"
 chmod +x "$APP_DIR/server"
 
