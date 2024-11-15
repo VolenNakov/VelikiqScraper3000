@@ -22,3 +22,11 @@ type RegisterResponse struct {
 	ID    int64  `json:"id"`
 	Email string `json:"email"`
 }
+
+type LoginRequest = RegisterRequest
+
+type LoginResponse struct {
+	ID    int64  `json:"id"`
+	Email string `json:"email"`
+	Token string `json:"token"`
+}
