@@ -56,6 +56,10 @@ func (s *userService) Login(ctx context.Context, req *model.LoginRequest) (*mode
 		return nil, repository.ErrInvalidPassword
 	}
 
+	if !user.IsVerified {
+		return nil, repository.ErrUnverifiedUser
+	}
+
 	return &model.LoginResponse{
 		ID:    user.ID,
 		Email: user.Email,

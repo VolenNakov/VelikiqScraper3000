@@ -52,6 +52,9 @@ func (h *Handler) HandleLogin(c echo.Context) error {
 		if errors.Is(err, repository.ErrInvalidPassword) {
 			return c.JSON(http.StatusUnauthorized, response.Error("Invalid credentials"))
 		}
+		if errors.Is(err, repository.ErrUnverifiedUser) {
+			return c.JSON(http.StatusUnauthorized, response.Error("Unverified user"))
+		}
 		return c.JSON(http.StatusInternalServerError, response.Error("Internal server error"))
 	}
 	return c.JSON(http.StatusOK, response.Success(resp))

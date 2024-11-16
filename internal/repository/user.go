@@ -15,6 +15,7 @@ var (
 	ErrDuplicateEmail  = errors.New("email already exists")
 	ErrInternalError   = errors.New("internal error")
 	ErrInvalidPassword = errors.New("invalid password")
+	ErrUnverifiedUser  = errors.New("unverified user")
 )
 
 type UserRepository interface {

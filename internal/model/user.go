@@ -7,6 +7,7 @@ type User struct {
 	Email        string `json:"email"`
 	PasswordHash string `json:"-"`
 	CreatedAt    string `json:"created_at"`
+	IsVerified   bool   `json:"is_verified"`
 }
 
 func (u *User) GetID() string {
