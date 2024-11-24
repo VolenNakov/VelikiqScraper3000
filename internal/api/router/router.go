@@ -2,10 +2,11 @@ package router
 
 import (
 	"OlxScraper/internal/api/handler"
+	"OlxScraper/internal/middleware"
 	"OlxScraper/internal/service"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	echomw "github.com/labstack/echo/v4/middleware"
 )
 
 type CustomValidator struct {
@@ -29,9 +30,11 @@ func NewValidator() *CustomValidator {
 func New(service *service.Service) *echo.Echo {
 	e := echo.New()
 
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-	e.Use(middleware.CORS())
+	e.Use(echomw.RemoveTrailingSlash())
+	e.Use(echomw.Recover())
+	e.Use(echomw.CORS())
+	e.Use(echomw.Gzip())
+	e.Use(middleware.EnhancedLogger())
 	e.Validator = NewValidator()
 
 	h := handler.New(service)
