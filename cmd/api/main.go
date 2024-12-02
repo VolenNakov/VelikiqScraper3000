@@ -2,6 +2,7 @@ package main
 
 import (
 	"OlxScraper/internal/api/router"
+	"OlxScraper/internal/auth"
 	sqlcDb "OlxScraper/internal/db"
 	"OlxScraper/internal/repository"
 	"OlxScraper/internal/service"
@@ -35,11 +36,13 @@ func main() {
 		log.Fatal(err)
 	}
 
+	jwtService := auth.NewJWTService("asdf")
+
 	queries := sqlcDb.New(db)
 
 	repo := repository.New(queries)
-	svc := service.New(repo)
-	r := router.New(svc)
+	svc := service.New(repo, jwtService)
+	r := router.New(svc, jwtService)
 
 	port := os.Getenv("PORT")
 

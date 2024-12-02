@@ -13,4 +13,6 @@ type User struct {
 	Email        string
 	PasswordHash string
 	CreatedAt    sql.NullTime
+	IsVerified   sql.NullBool
+	Role         sql.NullString
 }

@@ -7,9 +7,10 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
-const createUser = `-- name: CreateUser :exec
+const createUser = `-- name: CreateUser :execlastid
 INSERT INTO users (email, password_hash) VALUES (?, ?)
 `
 
@@ -18,23 +19,78 @@ type CreateUserParams struct {
 	PasswordHash string
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
-	_, err := q.db.ExecContext(ctx, createUser, arg.Email, arg.PasswordHash)
-	return err
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, createUser, arg.Email, arg.PasswordHash)
+	if err != nil {
+		return 0, err
+	}
+	return result.LastInsertId()
 }
 
-const getUser = `-- name: GetUser :one
-SELECT id, email, password_hash, created_at FROM users WHERE email = ? LIMIT 1
+const getUnverifiedUsers = `-- name: GetUnverifiedUsers :many
+SELECT id, email, password_hash, created_at, is_verified, role FROM users WHERE is_verified = 0 ORDER BY id
 `
 
-func (q *Queries) GetUser(ctx context.Context, email string) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUser, email)
+func (q *Queries) GetUnverifiedUsers(ctx context.Context) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, getUnverifiedUsers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []User
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.PasswordHash,
+			&i.CreatedAt,
+			&i.IsVerified,
+			&i.Role,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getUserByEmail = `-- name: GetUserByEmail :one
+SELECT id, email, password_hash, created_at, is_verified, role FROM users WHERE email = ? LIMIT 1
+`
+
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
 	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.Email,
 		&i.PasswordHash,
 		&i.CreatedAt,
+		&i.IsVerified,
+		&i.Role,
 	)
 	return i, err
+}
+
+const verifyUser = `-- name: VerifyUser :one
+UPDATE users SET is_verified = ? WHERE id = ? RETURNING is_verified
+`
+
+type VerifyUserParams struct {
+	IsVerified sql.NullBool
+	ID         int64
+}
+
+func (q *Queries) VerifyUser(ctx context.Context, arg VerifyUserParams) (sql.NullBool, error) {
+	row := q.db.QueryRowContext(ctx, verifyUser, arg.IsVerified, arg.ID)
+	var is_verified sql.NullBool
+	err := row.Scan(&is_verified)
+	return is_verified, err
 }

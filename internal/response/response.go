@@ -1,10 +1,16 @@
 package response
 
 type Response struct {
-	Status  string      `json:"status"`
-	Message string      `json:"message,omitempty"`
-	Data    interface{} `json:"data,omitempty"`
-	Code    int         `json:"code,omitempty"`
+	Status  string            `json:"status"`
+	Message string            `json:"message,omitempty"`
+	Data    interface{}       `json:"data,omitempty"`
+	Errors  []ValidationError `json:"errors,omitempty"`
+}
+
+type ValidationError struct {
+	Field string      `json:"field"`
+	Error string      `json:"error"`
+	Value interface{} `json:"value,omitempty"`
 }
 
 func OK() Response {
@@ -20,13 +26,11 @@ func Success(data interface{}) Response {
 	}
 }
 
-func Error(message string, code ...int) Response {
+func Error(message string, data interface{}) Response {
 	res := Response{
 		Status:  "error",
 		Message: message,
-	}
-	if len(code) > 0 {
-		res.Code = code[0]
+		Data:    data,
 	}
 	return res
 }

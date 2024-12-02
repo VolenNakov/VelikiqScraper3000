@@ -1,6 +1,7 @@
 package service
 
 import (
+	"OlxScraper/internal/db"
 	"OlxScraper/internal/model"
 	"OlxScraper/internal/repository"
 	"context"
@@ -9,7 +10,6 @@ import (
 
 type UserService interface {
 	Register(ctx context.Context, req *model.RegisterRequest) (*model.RegisterResponse, error)
-	Login(ctx context.Context, req *model.LoginRequest) (*model.LoginResponse, error)
 }
 
 type userService struct {
@@ -26,44 +26,18 @@ func (s *userService) Register(ctx context.Context, req *model.RegisterRequest) 
 		return nil, err
 	}
 
-	user := &model.User{
+	user := &db.User{
 		Email:        req.Email,
 		PasswordHash: string(hashedPassword),
 	}
 
-	if err := s.repo.User.Create(ctx, user); err != nil {
+	createdUserId, err := s.repo.User.Create(ctx, user)
+	if err != nil {
 		return nil, err
 	}
 
 	return &model.RegisterResponse{
-		ID:    user.ID,
+		ID:    createdUserId,
 		Email: user.Email,
 	}, nil
-}
-
-func (s *userService) Login(ctx context.Context, req *model.LoginRequest) (*model.LoginResponse, error) {
-	user, err := s.repo.User.FindByEmail(ctx, req.Email)
-	if err != nil {
-		return nil, err
-	}
-
-	if user == nil {
-		return nil, err
-	}
-
-	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(req.Password))
-	if err != nil {
-		return nil, repository.ErrInvalidPassword
-	}
-
-	if !user.IsVerified {
-		return nil, repository.ErrUnverifiedUser
-	}
-
-	return &model.LoginResponse{
-		ID:    user.ID,
-		Email: user.Email,
-		Token: "testing",
-	}, nil
-
 }

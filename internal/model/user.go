@@ -1,17 +1,10 @@
 package model
 
-import "fmt"
-
 type User struct {
-	ID           int64  `json:"id"`
-	Email        string `json:"email"`
-	PasswordHash string `json:"-"`
-	CreatedAt    string `json:"created_at"`
-	IsVerified   bool   `json:"is_verified"`
-}
-
-func (u *User) GetID() string {
-	return fmt.Sprintf("%d", u.ID)
+	ID         int64  `json:"id"`
+	Email      string `json:"email"`
+	CreatedAt  string `json:"created_at"`
+	IsVerified bool   `json:"is_verified"`
 }
 
 type RegisterRequest struct {
@@ -20,7 +13,7 @@ type RegisterRequest struct {
 }
 
 type RegisterResponse struct {
-	ID    int64  `json:"id"`
+	ID    *int64 `json:"id"`
 	Email string `json:"email"`
 }
 
