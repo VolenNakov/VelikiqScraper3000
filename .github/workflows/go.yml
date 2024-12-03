@@ -13,6 +13,7 @@ jobs:
       DB_FILE: ${{ secrets.DATABASE_URL }}
       APP_PORT: ${{ secrets.APP_PORT }}
       APP_FOLDER: ${{ secrets.APP_FOLDER }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
     steps:
       - name: Stop existing service

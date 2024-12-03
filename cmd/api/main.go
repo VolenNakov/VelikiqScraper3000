@@ -18,7 +18,8 @@ import (
 )
 
 type Config struct {
-	DbFile string `env:"DB_FILE,required"`
+	DbFile    string `env:"DB_FILE,required"`
+	JWTSecret string `env:"JWT_SECRET,required"`
 }
 
 func main() {
@@ -36,7 +37,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	jwtService := auth.NewJWTService("asdf")
+	jwtService := auth.NewJWTService(cfg.JWTSecret)
 
 	queries := sqlcDb.New(db)
 
