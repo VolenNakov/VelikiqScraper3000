@@ -2,25 +2,25 @@ package model
 
 type User struct {
 	ID         int64  `json:"id"`
-	Email      string `json:"email"`
+	Username   string `json:"username"`
 	CreatedAt  string `json:"created_at"`
 	IsVerified bool   `json:"is_verified"`
 }
 
 type RegisterRequest struct {
-	Email    string `json:"email" validate:"required,email"`
+	Username string `json:"username" validate:"required"`
 	Password string `json:"password" validate:"required,min=6"`
 }
 
 type RegisterResponse struct {
-	ID    *int64 `json:"id"`
-	Email string `json:"email"`
+	ID       *int64 `json:"id"`
+	Username string `json:"username"`
 }
 
 type LoginRequest = RegisterRequest
 
 type LoginResponse struct {
-	ID    int64  `json:"id"`
-	Email string `json:"email"`
-	Token string `json:"token"`
+	ID       int64  `json:"id"`
+	Username string `json:"username"`
+	Token    string `json:"token"`
 }

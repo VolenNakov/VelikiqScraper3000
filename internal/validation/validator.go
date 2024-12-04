@@ -42,8 +42,6 @@ func translateError(err validator.FieldError) string {
 	switch err.Tag() {
 	case "required":
 		return "This field is required"
-	case "email":
-		return "Invalid email address"
 	case "min":
 		return "Must be at least " + err.Param() + " characters long"
 	case "gte":

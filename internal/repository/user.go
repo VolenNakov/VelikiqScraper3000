@@ -10,16 +10,16 @@ import (
 )
 
 var (
-	ErrUserNotFound    = errors.New("user not found")
-	ErrDuplicateEmail  = errors.New("email already exists")
-	ErrInternalError   = errors.New("internal error")
-	ErrInvalidPassword = errors.New("invalid password")
-	ErrUnverifiedUser  = errors.New("unverified user")
+	ErrUserNotFound      = errors.New("user not found")
+	ErrDuplicateUsername = errors.New("username already exists")
+	ErrInternalError     = errors.New("internal error")
+	ErrInvalidPassword   = errors.New("invalid password")
+	ErrUnverifiedUser    = errors.New("unverified user")
 )
 
 type UserRepository interface {
 	Create(ctx context.Context, user *db.User) (*int64, error)
-	FindByEmail(ctx context.Context, email string) (*db.User, error)
+	FindByUsername(ctx context.Context, username string) (*db.User, error)
 	Verify(ctx context.Context, id int) (*bool, error)
 	GetUnverifiedUsers(ctx context.Context) ([]db.User, error)
 }
@@ -34,20 +34,20 @@ func NewUserRepository(queries *db.Queries) UserRepository {
 
 func (r *userRepository) Create(ctx context.Context, user *db.User) (*int64, error) {
 	userId, err := r.queries.CreateUser(ctx, db.CreateUserParams{
-		Email:        user.Email,
+		Username:     user.Username,
 		PasswordHash: user.PasswordHash,
 	})
 	if err != nil {
 		if strings.Contains(err.Error(), "UNIQUE constraint failed") {
-			return nil, ErrDuplicateEmail
+			return nil, ErrDuplicateUsername
 		}
 		return nil, err
 	}
 	return &userId, nil
 
 }
-func (r *userRepository) FindByEmail(ctx context.Context, email string) (*db.User, error) {
-	user, err := r.queries.GetUserByEmail(ctx, email)
+func (r *userRepository) FindByUsername(ctx context.Context, username string) (*db.User, error) {
+	user, err := r.queries.GetUserByUsername(ctx, username)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, ErrUserNotFound
@@ -57,7 +57,7 @@ func (r *userRepository) FindByEmail(ctx context.Context, email string) (*db.Use
 	}
 	return &db.User{
 		ID:           user.ID,
-		Email:        user.Email,
+		Username:     user.Username,
 		IsVerified:   user.IsVerified,
 		Role:         user.Role,
 		PasswordHash: user.PasswordHash,

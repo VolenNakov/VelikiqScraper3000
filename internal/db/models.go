@@ -10,7 +10,7 @@ import (
 
 type User struct {
 	ID           int64
-	Email        string
+	Username     string
 	PasswordHash string
 	CreatedAt    sql.NullTime
 	IsVerified   sql.NullBool

@@ -20,8 +20,8 @@ func (h *Handler) HandleRegister(c echo.Context) error {
 	resp, err := h.service.User.Register(ctx, &req)
 	if err != nil {
 		log.Println(err)
-		if errors.Is(err, repository.ErrDuplicateEmail) {
-			return c.JSON(http.StatusConflict, response.Error("Email already exists", nil))
+		if errors.Is(err, repository.ErrDuplicateUsername) {
+			return c.JSON(http.StatusConflict, response.Error("Username already exists", nil))
 		}
 
 		return c.JSON(http.StatusInternalServerError, response.Error("Internal server error", nil))

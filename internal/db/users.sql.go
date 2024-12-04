@@ -11,16 +11,16 @@ import (
 )
 
 const createUser = `-- name: CreateUser :execlastid
-INSERT INTO users (email, password_hash) VALUES (?, ?)
+INSERT INTO users (username, password_hash) VALUES (?, ?)
 `
 
 type CreateUserParams struct {
-	Email        string
+	Username     string
 	PasswordHash string
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, createUser, arg.Email, arg.PasswordHash)
+	result, err := q.db.ExecContext(ctx, createUser, arg.Username, arg.PasswordHash)
 	if err != nil {
 		return 0, err
 	}
@@ -28,7 +28,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, 
 }
 
 const getUnverifiedUsers = `-- name: GetUnverifiedUsers :many
-SELECT id, email, password_hash, created_at, is_verified, role FROM users WHERE is_verified = 0 ORDER BY id
+SELECT id, username, password_hash, created_at, is_verified, role FROM users WHERE is_verified = 0 ORDER BY id
 `
 
 func (q *Queries) GetUnverifiedUsers(ctx context.Context) ([]User, error) {
@@ -42,7 +42,7 @@ func (q *Queries) GetUnverifiedUsers(ctx context.Context) ([]User, error) {
 		var i User
 		if err := rows.Scan(
 			&i.ID,
-			&i.Email,
+			&i.Username,
 			&i.PasswordHash,
 			&i.CreatedAt,
 			&i.IsVerified,
@@ -61,16 +61,16 @@ func (q *Queries) GetUnverifiedUsers(ctx context.Context) ([]User, error) {
 	return items, nil
 }
 
-const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, email, password_hash, created_at, is_verified, role FROM users WHERE email = ? LIMIT 1
+const getUserByUsername = `-- name: GetUserByUsername :one
+SELECT id, username, password_hash, created_at, is_verified, role FROM users WHERE username = ? LIMIT 1
 `
 
-func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
+func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByUsername, username)
 	var i User
 	err := row.Scan(
 		&i.ID,
-		&i.Email,
+		&i.Username,
 		&i.PasswordHash,
 		&i.CreatedAt,
 		&i.IsVerified,

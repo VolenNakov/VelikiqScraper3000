@@ -42,7 +42,7 @@ func (s *adminService) GetUnverifiedUsers(ctx context.Context) ([]model.User, er
 	for i, dbUser := range dbUsers {
 		users[i] = model.User{
 			ID:         dbUser.ID,
-			Email:      dbUser.Email,
+			Username:   dbUser.Username,
 			CreatedAt:  dbUser.CreatedAt.Time.String(),
 			IsVerified: dbUser.IsVerified.Bool,
 		}

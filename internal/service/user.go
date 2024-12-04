@@ -27,7 +27,7 @@ func (s *userService) Register(ctx context.Context, req *model.RegisterRequest) 
 	}
 
 	user := &db.User{
-		Email:        req.Email,
+		Username:     req.Username,
 		PasswordHash: string(hashedPassword),
 	}
 
@@ -37,7 +37,7 @@ func (s *userService) Register(ctx context.Context, req *model.RegisterRequest) 
 	}
 
 	return &model.RegisterResponse{
-		ID:    createdUserId,
-		Email: user.Email,
+		ID:       createdUserId,
+		Username: user.Username,
 	}, nil
 }

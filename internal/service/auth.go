@@ -24,7 +24,7 @@ func NewAuthService(repo *repository.Repository, jwtService auth.JWTService) Aut
 	}
 }
 func (s *authService) Login(ctx context.Context, req *model.LoginRequest) (*model.LoginResponse, error) {
-	user, err := s.repo.User.FindByEmail(ctx, req.Email)
+	user, err := s.repo.User.FindByUsername(ctx, req.Username)
 	if err != nil {
 		return nil, err
 	}
@@ -48,8 +48,8 @@ func (s *authService) Login(ctx context.Context, req *model.LoginRequest) (*mode
 	}
 
 	return &model.LoginResponse{
-		ID:    user.ID,
-		Email: user.Email,
-		Token: token,
+		ID:       user.ID,
+		Username: user.Username,
+		Token:    token,
 	}, nil
 }
