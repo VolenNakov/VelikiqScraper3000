@@ -41,6 +41,15 @@ jobs:
         run: |
           chmod +x server
           cp server ${{ env.APP_FOLDER }}
+          - name: Make envfile
+      - name: Create .env file
+        uses: SpicyPizza/create-envfile@v2.0
+        with:
+          envkey_DB_FILE: ${{ env.DB_FILE }}
+          envkey_APP_PORT: ${{ env.APP_PORT }}
+          envkey_APP_FOLDER: ${{ env.APP_FOLDER }}
+          envkey_JWT_SECRET: ${{ env.JWT_SECRET }}
+          fail_on_empty: true
 
       - name: Restart Service
         run: sudo systemctl restart scraper
